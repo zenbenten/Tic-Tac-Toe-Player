@@ -24,10 +24,16 @@ import random
 # An empty slot is symbolized by the number 0,
 # player X as 1, player O as -1.
 
-# Constants
+#---Constants----#
 PLAYER_X = "X"
 PLAYER_O = "O"
 EMPTY_SLOT = " "
+
+#can be used for negative and positive 
+#infinity since they are outside
+#utility range of -1 0 1
+ALPHA_INIT = -2
+BETA_INIT = 2
 
 def print_config(config):
     # Map numbers -1, 0 1 to display player characters instead
@@ -46,7 +52,6 @@ def print_config(config):
     print("+---+---+---+")
     print("| {0} | {1} | {2} |".format(*display_config[6:9]))
     print("+---+---+---+")
-
 
 
 #def print_config(config):
@@ -87,21 +92,40 @@ def winner(config):
 
     return 0  # no winner yet (or a "draw" if all positions filled)
 
-def minimax(config, player, level):
+def minimax(config, player, level, alpha, beta):
     utility = winner(config)
 
     if utility == 0:  # not a terminal state
         succ_configs = successors(config, player)
 
         if succ_configs:  # more places to mark (not a "draw")
-            # Generate successors and determine utility
-            # for each recursively.
-            scores = [minimax(c, -player, level+1) for c in succ_configs]
+            #scores = [minimax(c, -player, level+1) for c in succ_configs]
 
             if player == 1:  # MAX level
-                utility = max(scores)
-            elif player == -1:  # MIN level
-                utility = min(scores)
+                best_utility = ALPHA_INIT # negative "infinity"
+                for c in succ_configs:
+                    # Generate successors and determine utility
+                    # for each recursively.
+                    val = minimax(c, -player, level+1, alpha, beta)
+                    best_utility = max(best_utility, val)
+                    alpha = max(alpha, best_utility)
+                    if beta <= alpha:
+                        break #beta cut off
+                utility = best_utility
+
+            elif player == -1:#MIN level
+                best_utility = BETA_INIT # Positive "infinity"
+                for c in succ_configs:
+                    # Generate successors and determine utility
+                    # for each recursively.
+                    val = minimax(c, -player, level+1, alpha, beta)
+                    best_utility = min(best_utility, val)
+                    beta = min(beta, best_utility)
+                    if beta <= alpha:
+                        break # Alpha cut off
+                utility = best_utility
+            
+        # If there were no succ_configs (is a draw) utility remains 0 as set by winner()
 
     print("Utility:", utility, "who moved:", -player, "level:", level)
     print_config(config)
@@ -113,4 +137,5 @@ def minimax(config, player, level):
 # a win for player X (1), a win for player O (-1) or a draw (0)?
 
 current_config = [1, 1, 0, -1, -1, 0, -1, 1, 0]
-print("Winner:", minimax(config=current_config, player=1, level=0))
+# Pass initial alpha ind beta values to first call
+print("Winner:", minimax(config=current_config, player=1, level=0, alpha=ALPHA_INIT, beta=BETA_INIT))
