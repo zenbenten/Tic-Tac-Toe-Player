@@ -24,15 +24,39 @@ import random
 # An empty slot is symbolized by the number 0,
 # player X as 1, player O as -1.
 
+# Constants
+PLAYER_X = "X"
+PLAYER_O = "O"
+EMPTY_SLOT = " "
 
 def print_config(config):
-    print("+----+----+----+")
-    print("| {0:2d} | {1:2d} | {2:2d} |".format(*config[0:3]))
-    print("+----+----+----+")
-    print ("| {0:2d} | {1:2d} | {2:2d} |".format(*config[3:6]))
-    print("+----+----+----+")
-    print ("| {0:2d} | {1:2d} | {2:2d} |".format(*config[6:9]))
-    print("+----+----+----+")
+    # Map numbers -1, 0 1 to display player characters instead
+    display_config = []
+    for mark in config:
+        if mark == 1:
+            display_config.append(PLAYER_X)
+        elif mark == -1:
+            display_config.append(PLAYER_O)
+        else:
+            display_config.append(EMPTY_SLOT)
+    print("+---+---+---+")
+    print("| {0} | {1} | {2} |".format(*display_config[0:3]))
+    print("+---+---+---+")
+    print("| {0} | {1} | {2} |".format(*display_config[3:6]))
+    print("+---+---+---+")
+    print("| {0} | {1} | {2} |".format(*display_config[6:9]))
+    print("+---+---+---+")
+
+
+
+#def print_config(config):
+#    print("+----+----+----+")
+#    print("| {0:2d} | {1:2d} | {2:2d} |".format(*config[0:3]))
+#    print("+----+----+----+")
+#    print ("| {0:2d} | {1:2d} | {2:2d} |".format(*config[3:6]))
+#    print("+----+----+----+")
+#    print ("| {0:2d} | {1:2d} | {2:2d} |".format(*config[6:9]))
+#    print("+----+----+----+")
 
 def successors(config, player):
     succ_configs = []
