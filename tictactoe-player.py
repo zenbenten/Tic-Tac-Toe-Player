@@ -2,9 +2,24 @@
 # Topic:   Search
 # Course:  CSI480 (Artificial Intelligence)
 # Date:    October 12, 2025
-# Description: Determine utility of particular starting
-#              configuration for X in tic-tac-toe game
-#              using minimax.
+# Description: Tic tac toe game pitting a human user against
+#              an unbeatable AI. The user can choose to play as X
+#              or O. Player X goes first. The computer's logic is driven
+#              by a minimax algorithm with alpha-beta pruning.
+
+#Explanation of alpha-beta pruning minimax:
+#               The AI uses the Minimax algorithm which a recursive function that explores every possible
+#               game outcome to find its optimal move. It assumes the AI is a "Maximizer" seeking
+#               a win score 1 and the human is a "Minimizer" seeking a loss of score -1. 
+#               Alpha-beta pruning speeds up the search by ignoring
+#               branches of the game tree that it knows are already worse than an option it has 
+#               already found. The AI has perfect play. It will always win if you 
+#               make a mistake or force a draw if you don't. A peculiarity is that it doesn't
+#               differentiate between how it wins. It simply picks the first move it finds that
+#               guarantees the best outcome, not caring how many moves that takes.
+
+#Reference for alpha-beta pruning algorithm:
+#https://www.geeksforgeeks.org/dsa/minimax-algorithm-in-game-theory-set-4-alpha-beta-pruning/
 
 import random
 
@@ -31,7 +46,7 @@ EMPTY_SLOT = " "
 
 #can be used for negative and positive 
 #infinity since they are outside
-#utility range of -1 0 1
+#utility range of -1, 0, 1
 ALPHA_INIT = -2
 BETA_INIT = 2
 
@@ -52,16 +67,6 @@ def print_config(config):
     print("+---+---+---+")
     print("| {0} | {1} | {2} |".format(*display_config[6:9]))
     print("+---+---+---+")
-
-
-#def print_config(config):
-#    print("+----+----+----+")
-#    print("| {0:2d} | {1:2d} | {2:2d} |".format(*config[0:3]))
-#    print("+----+----+----+")
-#    print ("| {0:2d} | {1:2d} | {2:2d} |".format(*config[3:6]))
-#    print("+----+----+----+")
-#    print ("| {0:2d} | {1:2d} | {2:2d} |".format(*config[6:9]))
-#    print("+----+----+----+")
 
 def successors(config, player):
     succ_configs = []
