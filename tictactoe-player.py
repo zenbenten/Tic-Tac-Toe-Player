@@ -1,7 +1,7 @@
 # File:    tictactoe-player.py
 # Topic:   Search
 # Course:  CSI480 (Artificial Intelligence)
-# Date:    October 9, 2025
+# Date:    October 12, 2025
 # Description: Determine utility of particular starting
 #              configuration for X in tic-tac-toe game
 #              using minimax.
@@ -164,10 +164,12 @@ def computer_best_move(config, player):
                 break
     return best_move
 
-def get_user_move(config):
+def get_user_move(config, player):#BONUS: accept player as argument
+    # BONUS: Determine who's moving for the prompt
+    player_char = PLAYER_X if player == 1 else PLAYER_O
     while True:
         try:
-            move_str = input(f"Your turn ({PLAYER_X}). Enter position (0-8): ")
+            move_str = input(f"Your turn ({player_char}). Enter position (0-8): ")
             move = int(move_str)
             
             if move < 0 or move > 8:
@@ -177,7 +179,7 @@ def get_user_move(config):
             else:
                 # apply valid move
                 new_config = config[:]
-                new_config[move] = 1  # User is always player 1
+                new_config[move] = player
                 return new_config
         
         except ValueError:
@@ -185,9 +187,28 @@ def get_user_move(config):
 
 def main_game_loop():
     current_config = [0, 0, 0, 0, 0, 0, 0, 0, 0] # Blank board
-    current_player = 1  # User starts first
+
+    #Bonus: Ask for user's choice of player X or player O
+    user_player = 0
+    computer_player = 0
+    while True:
+        choice = input("Do you want to play as X or O? ").upper()
+        if choice == 'X':
+            user_player = 1
+            computer_player = -1
+            print("You are X. You will go first.")
+            break
+        elif choice == 'O':
+            user_player = -1
+            computer_player = 1
+            print("You are O. CPU will go first.")
+            break
+        else:
+            print("Invalid choice. Please enter X or O.")
+
+    current_player = 1  # x goes first
     
-    print("You are 'X'. Enter a number 0-8 to make your move.")
+    print("Enter a number 0-8 to make your move.")
     print("The board positions are:")
     print("+---+---+---+")
     print("| 0 | 1 | 2 |")
@@ -198,15 +219,15 @@ def main_game_loop():
     print("+---+---+---+")
     
     while True:
-        if current_player == 1:
+        if current_player == user_player:
             # User turn
-            current_config = get_user_move(current_config)
+            current_config = get_user_move(current_config, user_player)
             print_config(current_config)
         else:
             # CPU turn
             print("CPU's turn...")
             old_config = current_config[:] #store old board
-            current_config = computer_best_move(current_config, current_player)
+            current_config = computer_best_move(current_config, computer_player)
 
             # Figure out what move the computer made to print it
             move_made = -1
