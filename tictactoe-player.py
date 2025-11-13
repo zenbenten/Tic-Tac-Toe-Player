@@ -132,10 +132,51 @@ def minimax(config, player, level, alpha, beta):
 
     return utility
 
+def computer_best_move(config, player):
+    succ_configs = successors(config, player)
+    best_move = None
+    # "infinity" values
+    alpha = ALPHA_INIT
+    beta = BETA_INIT
+
+    if player == 1:  # MAX player
+        best_util = ALPHA_INIT
+        for move in succ_configs:
+            # -player is opponent, call minimax from new board state for them starting
+            # at level one
+            val = minimax(move, -player, 1, alpha, beta)
+            if val > best_util:
+                best_util = val
+                best_move = move
+            alpha = max(alpha, best_util)
+            #prune at root level
+            if beta <= alpha:
+                break
+    else:  # MIN player
+        best_util = BETA_INIT
+        for move in succ_configs:
+            val = minimax(move, -player, 1, alpha, beta)
+            if val < best_util:
+                best_util = val
+                best_move = move
+            beta = min(beta, best_util)
+            if beta <= alpha:
+                break
+    return best_move
+
 # Current configuration used as starting point.
 # Assuming optimal play (each player trying to win), will it be
 # a win for player X (1), a win for player O (-1) or a draw (0)?
 
 current_config = [1, 1, 0, -1, -1, 0, -1, 1, 0]
-# Pass initial alpha ind beta values to first call
-print("Winner:", minimax(config=current_config, player=1, level=0, alpha=ALPHA_INIT, beta=BETA_INIT))
+
+print("Original config:")
+print_config(current_config)
+
+best_move = computer_best_move(config=current_config, player=1)
+
+print("Best move:")
+if best_move:
+    print_config(best_move)
+else:
+    print("No moves available. Game over!")
