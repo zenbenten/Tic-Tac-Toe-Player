@@ -127,8 +127,8 @@ def minimax(config, player, level, alpha, beta):
             
         # If there were no succ_configs (is a draw) utility remains 0 as set by winner()
 
-    print("Utility:", utility, "who moved:", -player, "level:", level)
-    print_config(config)
+    #print("Utility:", utility, "who moved:", -player, "level:", level)
+    #print_config(config)
 
     return utility
 
@@ -164,19 +164,79 @@ def computer_best_move(config, player):
                 break
     return best_move
 
-# Current configuration used as starting point.
-# Assuming optimal play (each player trying to win), will it be
-# a win for player X (1), a win for player O (-1) or a draw (0)?
+def get_user_move(config):
+    while True:
+        try:
+            move_str = input(f"Your turn ({PLAYER_X}). Enter position (0-8): ")
+            move = int(move_str)
+            
+            if move < 0 or move > 8:
+                print("Invalid move.")
+            elif config[move] != 0:
+                print("Position is already taken.")
+            else:
+                # apply valid move
+                new_config = config[:]
+                new_config[move] = 1  # User is always player 1
+                return new_config
+        
+        except ValueError:
+            print("Invalid input.")
 
-current_config = [1, 1, 0, -1, -1, 0, -1, 1, 0]
+def main_game_loop():
+    current_config = [0, 0, 0, 0, 0, 0, 0, 0, 0] # Blank board
+    current_player = 1  # User starts first
+    
+    print("You are 'X'. Enter a number 0-8 to make your move.")
+    print("The board positions are:")
+    print("+---+---+---+")
+    print("| 0 | 1 | 2 |")
+    print("+---+---+---+")
+    print("| 3 | 4 | 5 |")
+    print("+---+---+---+")
+    print("| 6 | 7 | 8 |")
+    print("+---+---+---+")
+    
+    while True:
+        if current_player == 1:
+            # User turn
+            current_config = get_user_move(current_config)
+            print_config(current_config)
+        else:
+            # CPU turn
+            print("CPU's turn...")
+            old_config = current_config[:] #store old board
+            current_config = computer_best_move(current_config, current_player)
 
-print("Original config:")
-print_config(current_config)
+            # Figure out what move the computer made to print it
+            move_made = -1
+            if current_config: # did it return a move?
+                for i in range(9):
+                    if old_config[i] != current_config[i]:
+                        move_made = i
+                        break
+                print(f"CPU chose position {move_made}")
+                print_config(current_config)
 
-best_move = computer_best_move(config=current_config, player=1)
 
-print("Best move:")
-if best_move:
-    print_config(best_move)
-else:
-    print("No moves available. Game over!")
+        # Check for game over
+        game_winner = winner(current_config)
+        if game_winner != 0:
+            if game_winner == 1:
+                print("Game over! X wins!")
+            else:
+                print("Game over! O wins!")
+            break
+
+        #Draw if no winner and no more valid moves
+        if game_winner == 0 and not successors(current_config, -current_player):
+            print("Game over. It's a draw.")
+            break
+        
+        # Switch players between X to O or O to X
+        current_player = -current_player
+
+
+# Start game
+if __name__ == "__main__":
+    main_game_loop()
